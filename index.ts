@@ -65,14 +65,3 @@ function wait(seconds: number): Promise<null> {
     return setTimeout(() => resolve(null), seconds * 1000);
   });
 }
-
-async function beginSimulation(boardSize: number): Promise<void> {
-  let trials = Math.floor(Math.random() * boardSize) + 1;
-  while (trials) {
-    const row = Math.floor(Math.random() * boardSize) + 1;
-    const col = Math.floor(Math.random() * boardSize) + 1;
-    await wait(0.25);
-    fillSite([row, col], "blue");
-    trials--;
-  }
-}
