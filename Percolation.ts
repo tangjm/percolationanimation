@@ -1,4 +1,4 @@
-import WeightedQuickUnionWithPathCompression from "./WeightedQuickUnionWithPathCompression.js";
+import WeightedQuickUnionWithPathCompression from "./dataStructures/WeightedQuickUnionWithPathCompression.js";
 
 export type GridVertex = [number, number];
 
