@@ -105,7 +105,7 @@ export default class Percolation {
   open(vertex: GridVertex): boolean {
     if (!this.isValidVertex(vertex))
       throw new Error(
-        "IllegalArgumentException -- Vertex falls outside the grid"
+        `IllegalArgumentException -- Vertex ${vertex} falls outside the ${this.n}x${this.n} grid`
       );
     if (this.isOpen(vertex)) return false;
     const currentSitePos: number = this.gridVertexToSitePos(vertex);
@@ -126,7 +126,7 @@ export default class Percolation {
   isOpen(vertex: GridVertex): boolean {
     if (!this.isValidVertex(vertex))
       throw new Error(
-        "IllegalArgumentException -- Vertex falls outside the grid"
+        `IllegalArgumentException -- Vertex ${vertex} falls outside the ${this.n}x${this.n} grid`
       );
     const [col, row] = vertex;
     return this.grid[col][row];
@@ -150,7 +150,7 @@ export default class Percolation {
   isFull(vertex: GridVertex): boolean {
     if (!this.isValidVertex(vertex))
       throw new Error(
-        "IllegalArgumentException -- Vertex falls outside the grid"
+        `IllegalArgumentException -- Vertex ${vertex} falls outside the ${this.n}x${this.n} grid`
       );
     if (!this.isOpen(vertex)) return false;
     const sitePos: number = this.gridVertexToSitePos(vertex);
