@@ -1,19 +1,11 @@
-import Percolation, { GridVertex } from "./Percolation.js";
+import { getNumericEntries } from "./helpers.js";
+import Percolation from "./Percolation.js";
+import PercolationGrid from "./PercolationGrid.js";
+import PercolationStats from "./PercolationStats.js";
 
-const scale = 30;
+const scale = 5;
 const size = 10;
-
-const canvas = document.createElement("canvas");
-const canvasSize = size * scale + 2 * scale;
-canvas.setAttribute("width", String(canvasSize));
-canvas.setAttribute("height", String(canvasSize));
-const rootNode = document.querySelector("div");
-rootNode.appendChild(canvas);
-
-const cx = canvas.getContext("2d");
-cx.strokeStyle = "black";
-cx.lineWidth = 1;
-cx.strokeRect(0, 0, canvasSize, canvasSize);
+const numOfGrids = 333;
 
 // Possible coords
 // (0, 0) to (size + 1, size + 1)
@@ -22,46 +14,82 @@ cx.strokeRect(0, 0, canvasSize, canvasSize);
 // (0, 0) is our virtual top node
 // (size + 1, size + 1) is our virtual bottom node
 
-const percolation = new Percolation(size);
+function updateDOM(e: string, val: any): void {
+  const elements = {
+    trials: document.querySelector("p[id='trials']"),
+    mean: document.querySelector("p[id='mean']"),
+    stdDev: document.querySelector("p[id='stdDev']"),
+  };
+  const table = {
+    trials: updateLastElementChild,
+    mean: updateLastElementChild,
+    stdDev: updateLastElementChild,
+  };
+  return table[e](elements[e], String(val));
+}
 
-beginPercolationSimulation();
+function updateLastElementChild(e: Element, text: string) {
+  let lastChild = e.lastElementChild;
+  if (!lastChild) return;
+  console.log(lastChild);
+  lastChild.textContent = text;
+}
 
-async function beginPercolationSimulation(): Promise<void> {
-  while (!percolation.percolates()) {
-    await wait(0.05);
-    const row = Math.floor(Math.random() * size) + 1;
-    const col = Math.floor(Math.random() * size) + 1;
-    if (percolation.open([col, row])) {
-      fillSite([col, row], "blue");
-    }
-  }
-  for (let y = 1; y <= size; y++) {
-    for (let x = 1; x <= size; x++) {
-      if (percolation.isFull([x, y])) {
-        cx.fillStyle = "green";
-        fillSite([x, y], "green");
+const monteCarloSimulation: PercolationStats = {
+  trials: 0,
+  percolationThresholds: [],
+  mean: null,
+  stdDev: null,
+  incrementTrials() {
+    this.trials++;
+    updateDOM("trials", this.trials);
+  },
+  updateMean() {
+    this.mean =
+      this.percolationThresholds.reduce((a: number, b: number) => a + b) /
+      this.trials;
+    updateDOM("mean", this.mean);
+  },
+  updateStdDev() {
+    const sumVariances = this.percolationThresholds.reduce(
+      (acc: number, threshold: number) => {
+        const diff = threshold - this.mean;
+        return acc + Math.pow(diff, 2);
       }
-    }
-  }
-}
+    );
+    this.stdDev = sumVariances / this.trials;
+    updateDOM("stdDev", this.stdDev);
+  },
+  updateResults(percolationGrid: PercolationGrid) {
+    this.incrementTrials();
+    const percolationThreshold =
+      percolationGrid.percolation.numberOfOpenSites() /
+      Math.pow(percolationGrid.percolation.n, 2);
+    this.percolationThresholds.push(percolationThreshold);
+    this.updateMean();
+    this.updateStdDev();
+    getNumericEntries(this).forEach((entry) => {
+      // console.log(entry[0], entry[1]);
+    });
+  },
+};
 
-function fillSite(start: GridVertex, colour: string) {
-  cx.fillStyle = colour;
-  const startX = start[0] * scale;
-  const startY = start[1] * scale;
-  const endX = scale;
-  const endY = scale;
-  cx.moveTo(startX, startY);
-  cx.fillRect(startX, startY, endX, endY);
-}
+let grids: PercolationGrid[] = [...new Array(numOfGrids)];
 
-/**
- * Wait a specified number of seconds before resolving to 'null'.
- * @param seconds to wait
- * @returns
- */
-function wait(seconds: number): Promise<null> {
-  return new Promise((resolve, reject) => {
-    return setTimeout(() => resolve(null), seconds * 1000);
+grids = grids.map(
+  (_) => new PercolationGrid(scale, size, new Percolation(size))
+);
+grids.forEach((grid) => grid.createPercolationGrid());
+
+const simulations = [];
+grids.forEach((grid) => {
+  const simulation = grid.beginPercolationSimulation();
+  simulation.then(() => {
+    monteCarloSimulation.updateResults(grid);
   });
-}
+  simulations.push(simulation);
+});
+
+Promise.all(simulations).then(() => {
+  console.log("Total trials", monteCarloSimulation.trials);
+});
