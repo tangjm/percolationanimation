@@ -6,11 +6,18 @@ export default class PercolationGrid {
   scale: number;
   size: number;
   percolation: Percolation;
+  darkTheme: boolean;
 
-  constructor(scale: number, size: number, percolation: Percolation) {
+  constructor(
+    scale: number,
+    size: number,
+    percolation: Percolation,
+    darkTheme = false
+  ) {
     this.scale = scale;
     this.size = size;
     this.percolation = percolation;
+    this.darkTheme = darkTheme;
   }
 
   createPercolationGrid() {
@@ -25,6 +32,16 @@ export default class PercolationGrid {
     this.cx.strokeStyle = "black";
     this.cx.lineWidth = 1;
     this.cx.strokeRect(0, 0, canvasSize, canvasSize);
+
+    if (this.darkTheme) {
+      this.cx.fillStyle = "black";
+      this.cx.fillRect(
+        this.scale,
+        this.scale,
+        canvasSize - this.scale * 2,
+        canvasSize - this.scale * 2
+      );
+    }
   }
 
   async beginPercolationSimulation(): Promise<void> {
