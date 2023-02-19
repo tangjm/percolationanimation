@@ -3,9 +3,63 @@ import Percolation from "./Percolation.js";
 import PercolationGrid from "./PercolationGrid.js";
 import PercolationStats from "./PercolationStats.js";
 
-const scale = 5;
-const size = 10;
-const numOfGrids = 333;
+const userOptions = {
+  scaleFactor: 10,
+  gridDimensions: 100,
+  numOfGrids: 1,
+  getScaleFactor() {
+    return this.scaleFactor;
+  },
+  getGridDimensions() {
+    return this.gridDimensions;
+  },
+  getNumOfGrids() {
+    return this.numOfGrids;
+  },
+  setScaleFactor(scaleFactor: number) {
+    this.scaleFactor = scaleFactor;
+  },
+  setGridDimensions(n: number) {
+    this.gridDimensions = n;
+  },
+  setNumOfGrids(numOfGrids: number) {
+    this.numOfGrids = numOfGrids;
+  },
+};
+
+enum DefaultSampleSizes {
+  LARGE,
+  MEDIUM,
+  SMALL,
+  RANDOM,
+}
+
+updateUserOptions(DefaultSampleSizes.SMALL);
+
+function updateUserOptions(options: DefaultSampleSizes) {
+  switch (options) {
+    case DefaultSampleSizes.LARGE:
+      userOptions.setScaleFactor(5);
+      userOptions.setGridDimensions(10);
+      userOptions.setNumOfGrids(333);
+      break;
+    case DefaultSampleSizes.MEDIUM:
+      userOptions.setScaleFactor(10);
+      userOptions.setGridDimensions(20);
+      userOptions.setNumOfGrids(50);
+      break;
+    case DefaultSampleSizes.SMALL:
+      userOptions.setScaleFactor(10);
+      userOptions.setGridDimensions(10);
+      userOptions.setNumOfGrids(1);
+      break;
+    case DefaultSampleSizes.RANDOM:
+      userOptions.setScaleFactor(10);
+      userOptions.setGridDimensions(10);
+      userOptions.setNumOfGrids(1);
+      break;
+  }
+}
 
 // Possible coords
 // (0, 0) to (size + 1, size + 1)
@@ -15,12 +69,23 @@ const numOfGrids = 333;
 // (size + 1, size + 1) is our virtual bottom node
 
 function updateDOM(e: string, val: any): void {
+  function updateTextContent(e: Element, text: string) {
+    e.textContent = text;
+  }
+  function updateLastElementChild(e: Element, text: string) {
+    let lastChild = e.lastElementChild;
+    if (!lastChild) return;
+    lastChild.textContent = text;
+  }
   const elements = {
-    trials: document.querySelector("p[id='trials']"),
+    trialsTotal: document.querySelector("b[id='trials-total']"),
+    trialsCompleted: document.querySelector("b[id='trials-completed']"),
     mean: document.querySelector("p[id='mean']"),
     stdDev: document.querySelector("p[id='stdDev']"),
   };
   const table = {
+    trialsTotal: updateTextContent,
+    trialsCompleted: updateTextContent,
     trials: updateLastElementChild,
     mean: updateLastElementChild,
     stdDev: updateLastElementChild,
@@ -28,56 +93,59 @@ function updateDOM(e: string, val: any): void {
   return table[e](elements[e], String(val));
 }
 
-function updateLastElementChild(e: Element, text: string) {
-  let lastChild = e.lastElementChild;
-  if (!lastChild) return;
-  console.log(lastChild);
-  lastChild.textContent = text;
-}
-
 const monteCarloSimulation: PercolationStats = {
-  trials: 0,
+  trials: {
+    total: userOptions.numOfGrids,
+    completed: 0,
+  },
   percolationThresholds: [],
   mean: null,
   stdDev: null,
   incrementTrials() {
-    this.trials++;
-    updateDOM("trials", this.trials);
+    this.trials.completed++;
+  },
+  addPercolationThreshold(percolationGrid: PercolationGrid) {
+    const percolationThreshold =
+      percolationGrid.percolation.numberOfOpenSites() /
+      Math.pow(percolationGrid.percolation.n, 2);
+    this.percolationThresholds.push(percolationThreshold);
   },
   updateMean() {
     this.mean =
-      this.percolationThresholds.reduce((a: number, b: number) => a + b) /
-      this.trials;
-    updateDOM("mean", this.mean);
+      this.percolationThresholds.reduce((a: number, b: number) => a + b, 0) /
+      this.trials.completed;
   },
   updateStdDev() {
     const sumVariances = this.percolationThresholds.reduce(
       (acc: number, threshold: number) => {
         const diff = threshold - this.mean;
         return acc + Math.pow(diff, 2);
-      }
+      },
+      0
     );
-    this.stdDev = sumVariances / this.trials;
-    updateDOM("stdDev", this.stdDev);
+    this.stdDev = sumVariances / this.trials.completed;
   },
   updateResults(percolationGrid: PercolationGrid) {
     this.incrementTrials();
-    const percolationThreshold =
-      percolationGrid.percolation.numberOfOpenSites() /
-      Math.pow(percolationGrid.percolation.n, 2);
-    this.percolationThresholds.push(percolationThreshold);
+    this.addPercolationThreshold(percolationGrid);
     this.updateMean();
     this.updateStdDev();
-    getNumericEntries(this).forEach((entry) => {
-      // console.log(entry[0], entry[1]);
-    });
+    updateDOM("trialsCompleted", this.trials.completed);
+    updateDOM("mean", this.mean);
+    updateDOM("stdDev", this.stdDev);
   },
 };
 
-let grids: PercolationGrid[] = [...new Array(numOfGrids)];
+let grids: PercolationGrid[] = [...new Array(userOptions.getNumOfGrids())];
 
 grids = grids.map(
-  (_) => new PercolationGrid(scale, size, new Percolation(size))
+  (_) =>
+    new PercolationGrid(
+      userOptions.getScaleFactor(),
+      userOptions.getGridDimensions(),
+      new Percolation(userOptions.getGridDimensions()),
+      true
+    )
 );
 grids.forEach((grid) => grid.createPercolationGrid());
 
