@@ -6,7 +6,7 @@ A project that visualises percolation through a 2D grid.
   <source media="(prefers-color-scheme: dark)" srcset="./images/percolationanimationDark.png">
   <source media="(prefers-color-scheme: light)" srcset="./images/percolationanimationLight.png">
 <img alt="Example percolation grid" src="./images/percolationanimationDark.png", width="150" height="150" />
-<img alt="Example percolation grid" src="./images/percolationanimationLight.png", width="50" height="50" />
+<img alt="Example percolation grid" src="./images/percolationanimationLight.png", width="150" height="150" />
 </picture>
 
 
