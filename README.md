@@ -6,17 +6,20 @@ Features
 
 - [x] Basic visualisation 
 
+UI
 
 - [ ] Change grid size 
 - [ ] Change size of each site 
 - [ ] Invert colours
 - [ ] Revert to previous positions 
+- [ ] Option to run simulations in parallel or in sequence.
 
-- [ ] Add statistics for the percolation threshold 
-- [ ] Mean threshold
-- [ ] Standard deviation for the threshold 
-- [ ] Have multiple instances of the percolation grid and perform many Monte Carlo simulations to estimate the percolation threshold. 
+Statistics 
 
+- [x] Add statistics for the percolation threshold 
+- [x] Mean threshold
+- [x] Standard deviation for the threshold 
+- [x] Have multiple instances of the percolation grid and perform many Monte Carlo simulations to estimate the percolation threshold. 
 
 Learnings
 
