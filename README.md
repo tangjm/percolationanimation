@@ -3,10 +3,10 @@
 A project that visualises percolation through a 2D grid.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./percolationanimationDark.png">
-  <source media="(prefers-color-scheme: light)" srcset="./percolationanimationLight.png">
-<img alt="Example percolation grid" src="./percolationanimationDark.png", width="50%" height="50%" />
-<img alt="Example percolation grid" src="./percolationanimationLight.png", width="50%" height="50%" />
+  <source media="(prefers-color-scheme: dark)" srcset="./images/percolationanimationDark.png">
+  <source media="(prefers-color-scheme: light)" srcset="./images/percolationanimationLight.png">
+<img alt="Example percolation grid" src="./images/percolationanimationDark.png", width="50%" height="50%" />
+<img alt="Example percolation grid" src="./images/percolationanimationLight.png", width="50%" height="50%" />
 </picture>
 
 
