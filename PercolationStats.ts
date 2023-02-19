@@ -9,7 +9,7 @@ export default interface PercolationStats {
   percolationThresholds: number[];
   mean: number | null;
   stdDev: number | null;
-  incrementTrials: () => void;
+  incrementTrialsCompleted: () => void;
   addPercolationThreshold: (g: PercolationGrid) => void;
   updateMean: () => void;
   updateStdDev: () => void;
