@@ -17,3 +17,13 @@ export function wait(seconds: number): Promise<null> {
 export function getNumericEntries(obj: object): [string, number][] {
   return Object.entries(obj).filter((entry) => typeof entry[1] === "number");
 }
+
+/**
+ * Return a random integer in the interval [min, max] with equal probability.
+ * @param min Lower bound
+ * @param max Upper bound
+ * @returns
+ */
+export function randomInt(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}

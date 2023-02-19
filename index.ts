@@ -1,9 +1,10 @@
-import { getNumericEntries } from "./helpers.js";
+import { randomInt } from "./helpers.js";
 import Percolation from "./Percolation.js";
 import PercolationGrid from "./PercolationGrid.js";
-import PercolationStats from "./PercolationStats.js";
+import { MonteCarloSimulation, updateDOM } from "./PercolationStats.js";
+import { UserOptions } from "./types.js";
 
-const userOptions = {
+const userOptions: UserOptions = {
   scaleFactor: 10,
   gridDimensions: 100,
   numOfGrids: 1,
@@ -34,7 +35,7 @@ enum DefaultSampleSizes {
   RANDOM,
 }
 
-updateUserOptions(DefaultSampleSizes.SMALL);
+updateUserOptions(DefaultSampleSizes.RANDOM);
 
 function updateUserOptions(options: DefaultSampleSizes) {
   switch (options) {
@@ -54,9 +55,14 @@ function updateUserOptions(options: DefaultSampleSizes) {
       userOptions.setNumOfGrids(1);
       break;
     case DefaultSampleSizes.RANDOM:
-      userOptions.setScaleFactor(10);
-      userOptions.setGridDimensions(10);
-      userOptions.setNumOfGrids(1);
+      const max = 30;
+      const min = 5;
+      const scaleFactor = randomInt(min, max / 2);
+      const gridCount =
+        scaleFactor >= 10 ? randomInt(min, max / 4) : randomInt(min, max * 4);
+      userOptions.setScaleFactor(scaleFactor);
+      userOptions.setGridDimensions(randomInt(min, max));
+      userOptions.setNumOfGrids(gridCount);
       break;
   }
 }
@@ -68,73 +74,10 @@ function updateUserOptions(options: DefaultSampleSizes) {
 // (0, 0) is our virtual top node
 // (size + 1, size + 1) is our virtual bottom node
 
-function updateDOM(e: string, val: any): void {
-  function updateTextContent(e: Element, text: string) {
-    e.textContent = text;
-  }
-  function updateLastElementChild(e: Element, text: string) {
-    let lastChild = e.lastElementChild;
-    if (!lastChild) return;
-    lastChild.textContent = text;
-  }
-  const elements = {
-    trialsTotal: document.querySelector("b[id='trials-total']"),
-    trialsCompleted: document.querySelector("b[id='trials-completed']"),
-    mean: document.querySelector("p[id='mean']"),
-    stdDev: document.querySelector("p[id='stdDev']"),
-  };
-  const table = {
-    trialsTotal: updateTextContent,
-    trialsCompleted: updateTextContent,
-    trials: updateLastElementChild,
-    mean: updateLastElementChild,
-    stdDev: updateLastElementChild,
-  };
-  return table[e](elements[e], String(val));
-}
-
-const monteCarloSimulation: PercolationStats = {
-  trials: {
-    total: userOptions.numOfGrids,
-    completed: 0,
-  },
-  percolationThresholds: [],
-  mean: null,
-  stdDev: null,
-  incrementTrials() {
-    this.trials.completed++;
-  },
-  addPercolationThreshold(percolationGrid: PercolationGrid) {
-    const percolationThreshold =
-      percolationGrid.percolation.numberOfOpenSites() /
-      Math.pow(percolationGrid.percolation.n, 2);
-    this.percolationThresholds.push(percolationThreshold);
-  },
-  updateMean() {
-    this.mean =
-      this.percolationThresholds.reduce((a: number, b: number) => a + b, 0) /
-      this.trials.completed;
-  },
-  updateStdDev() {
-    const sumVariances = this.percolationThresholds.reduce(
-      (acc: number, threshold: number) => {
-        const diff = threshold - this.mean;
-        return acc + Math.pow(diff, 2);
-      },
-      0
-    );
-    this.stdDev = sumVariances / this.trials.completed;
-  },
-  updateResults(percolationGrid: PercolationGrid) {
-    this.incrementTrials();
-    this.addPercolationThreshold(percolationGrid);
-    this.updateMean();
-    this.updateStdDev();
-    updateDOM("trialsCompleted", this.trials.completed);
-    updateDOM("mean", this.mean);
-    updateDOM("stdDev", this.stdDev);
-  },
-};
+const monteCarloSimulation: MonteCarloSimulation = new MonteCarloSimulation(
+  userOptions,
+  updateDOM
+);
 
 let grids: PercolationGrid[] = [...new Array(userOptions.getNumOfGrids())];
 
