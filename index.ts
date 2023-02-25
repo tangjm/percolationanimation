@@ -3,11 +3,13 @@ import Percolation from "./Percolation.js";
 import PercolationGrid from "./PercolationGrid.js";
 import { MonteCarloSimulation, updateDOM } from "./PercolationStats.js";
 import { UserOptions } from "./types.js";
+import { startButton, synchronous, asynchronous } from "./domSelectors.js";
 
 const userOptions: UserOptions = {
   scaleFactor: 10,
   gridDimensions: 100,
   numOfGrids: 1,
+  speed: 0.02,
   getScaleFactor() {
     return this.scaleFactor;
   },
@@ -16,6 +18,9 @@ const userOptions: UserOptions = {
   },
   getNumOfGrids() {
     return this.numOfGrids;
+  },
+  getAnimationSpeed() {
+    return this.speed;
   },
   setScaleFactor(scaleFactor: number) {
     this.scaleFactor = scaleFactor;
@@ -84,23 +89,49 @@ let grids: PercolationGrid[] = [...new Array(userOptions.getNumOfGrids())];
 grids = grids.map(
   (_) =>
     new PercolationGrid(
-      userOptions.getScaleFactor(),
-      userOptions.getGridDimensions(),
+      userOptions,
       new Percolation(userOptions.getGridDimensions()),
       true
     )
 );
 grids.forEach((grid) => grid.createPercolationGrid());
 
-const simulations = [];
-grids.forEach((grid) => {
-  const simulation = grid.beginPercolationSimulation();
-  simulation.then(() => {
-    monteCarloSimulation.updateResults(grid);
-  });
-  simulations.push(simulation);
+let simulationMode = "sync";
+
+synchronous.addEventListener("change", () => {
+  updateSimulationMode(synchronous.getAttribute("value"));
+});
+asynchronous.addEventListener("change", () => {
+  updateSimulationMode(asynchronous.getAttribute("value"));
 });
 
-Promise.all(simulations).then(() => {
-  console.log("Total trials", monteCarloSimulation.trials);
+function updateSimulationMode(newMode: string) {
+  simulationMode = newMode;
+}
+
+startButton.addEventListener("click", () => {
+  if (simulationMode === "sync") {
+    return initiateSimulationsSync();
+  }
+  return initiateSimulationsAsync();
 });
+
+/**
+ * Run simulations one after each other.
+ */
+async function initiateSimulationsSync() {
+  for (const grid of grids) {
+    await grid.beginPercolationSimulation();
+    monteCarloSimulation.updateResults(grid);
+  }
+}
+
+/**
+ * Run simulations in parallel.
+ */
+function initiateSimulationsAsync() {
+  grids.forEach((grid) => {
+    const simulation = grid.beginPercolationSimulation();
+    simulation.then(() => monteCarloSimulation.updateResults(grid));
+  });
+}

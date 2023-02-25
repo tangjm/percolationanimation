@@ -11,6 +11,30 @@
   <body>
     <h1>Monte Carlo simulations of percolation through a 2D grid.</h1>
     <div id="stats">
+      <div id="userOptions">
+        <div id="simulationOptions">
+          <div id="synchronous">
+            <input
+              type="radio"
+              id="synchronous"
+              name="simulationProperties"
+              value="sync"
+              checked
+            />
+            <label for="synchronous">Synchronous</label>
+          </div>
+          <div id="asynchronous">
+            <input
+              type="radio"
+              id="asynchronous"
+              name="simulationProperties"
+              value="async"
+            />
+            <label for="asynchronous">Asynchronous</label>
+          </div>
+        </div>
+        <button id="beginSimulationButton">Begin simulation</button>
+      </div>
       <h2>Statistics:</h2>
       <p id="trials">
         Trials: <b id="trials-completed">0</b> <b>/</b>
