@@ -1,21 +1,23 @@
 import Percolation, { GridVertex } from "./Percolation.js";
 import { wait } from "./helpers.js";
+import { UserOptions } from "./types.js";
 
 export default class PercolationGrid {
   cx: CanvasRenderingContext2D;
   scale: number;
   size: number;
+  animationDelay: number;
   percolation: Percolation;
   darkTheme: boolean;
 
   constructor(
-    scale: number,
-    size: number,
+    userOptions: UserOptions,
     percolation: Percolation,
     darkTheme = false
   ) {
-    this.scale = scale;
-    this.size = size;
+    this.scale = userOptions.getScaleFactor();
+    this.size = userOptions.getGridDimensions();
+    this.animationDelay = userOptions.getAnimationSpeed();
     this.percolation = percolation;
     this.darkTheme = darkTheme;
   }
@@ -46,7 +48,7 @@ export default class PercolationGrid {
 
   async beginPercolationSimulation(): Promise<void> {
     while (!this.percolation.percolates()) {
-      await wait(0.05);
+      await wait(this.animationDelay);
       const row = Math.floor(Math.random() * this.size) + 1;
       const col = Math.floor(Math.random() * this.size) + 1;
       if (this.percolation.open([col, row])) {
