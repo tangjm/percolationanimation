@@ -8,6 +8,7 @@ import {
   synchronous,
   presets,
   animationSpeed,
+  stopButton,
 } from "./domSelectors.js";
 import { UserOptions } from "./UserOptions.js";
 
@@ -16,6 +17,7 @@ enum Presets {
   MEDIUM,
   SMALL,
   RANDOM,
+  DEFAULT,
 }
 interface Options {
   scaleFactor: number;
@@ -24,19 +26,7 @@ interface Options {
   speed: number;
 }
 
-var userOptions = updateUserOptions({
-  scaleFactor: 10,
-  gridDimensions: 40,
-  numOfGrids: 1,
-  speed: 0.02,
-});
-
-function setUserOptions(options: Options) {
-  userOptions = updateUserOptions(options);
-  PercolationGrid.clearGrid();
-  updateMonteCarloSimulation();
-  updateGrids();
-}
+var userOptions = updateUserOptions(Presets.DEFAULT);
 
 function updateUserOptions(options: Presets | Options) {
   switch (options) {
@@ -60,6 +50,8 @@ function updateUserOptions(options: Presets | Options) {
         gridCount,
         0.02
       );
+    case Presets.DEFAULT:
+      return new UserOptions(10, 40, 1, 0.02);
     default:
       const { scaleFactor, gridDimensions, numOfGrids, speed } = options;
       return new UserOptions(scaleFactor, gridDimensions, numOfGrids, speed);
@@ -74,37 +66,13 @@ function updateUserOptions(options: Presets | Options) {
 // (size + 1, size + 1) is our virtual bottom node
 
 var monteCarloSimulation: MonteCarloSimulation = new MonteCarloSimulation(
-  userOptions,
+  userOptions
 );
 
 function updateMonteCarloSimulation() {
   monteCarloSimulation = new MonteCarloSimulation(userOptions);
 }
-
 var grids = generateGrids();
-
-// Presets
-presets.addEventListener("change", () => {
-  setUserOptions(Presets[presets.value]);
-});
-
-// Simulation speed
-animationSpeed.addEventListener("change", (e) => {
-  userOptions.setAnimationSpeed(+animationSpeed.value);
-  PercolationGrid.setAnimationDelay(userOptions.getAnimationSpeed());
-});
-
-// Simulation mode
-synchronous.addEventListener("change", () => {
-  updateSimulationMode(synchronous.getAttribute("value"));
-});
-asynchronous.addEventListener("change", () => {
-  updateSimulationMode(asynchronous.getAttribute("value"));
-});
-
-function updateSimulationMode(newMode: string) {
-  userOptions.setSyncMode(newMode === "sync");
-}
 
 // Grids
 function generateGrids() {
@@ -126,21 +94,69 @@ function updateGrids() {
   grids = generateGrids();
 }
 
+// Presets
+presets.addEventListener("change", () => {
+  setUserOptions(Presets[presets.value]);
+});
+
+function setUserOptions(options: Options) {
+  userOptions = updateUserOptions(options);
+  PercolationGrid.clearGrid();
+  updateGrids();
+  updateMonteCarloSimulation();
+  // monteCarloSimulation.clear();
+}
+// Simulation speed
+animationSpeed.addEventListener("change", (e) => {
+  userOptions.setAnimationSpeed(+animationSpeed.value);
+  PercolationGrid.setAnimationDelay(userOptions.getAnimationSpeed());
+});
+
+// Simulation mode
+synchronous.addEventListener("change", () => {
+  updateSimulationMode(synchronous.getAttribute("value"));
+});
+asynchronous.addEventListener("change", () => {
+  updateSimulationMode(asynchronous.getAttribute("value"));
+});
+
+function updateSimulationMode(newMode: string) {
+  userOptions.setSyncMode(newMode === "sync");
+}
+
 // Start simulation button
+/*
+Stop any existing simulations
+Clear the statistics for the current simulation
+Clear the grid 
+Create a new grid 
+Begin new simulations for all new grids
+*/
 startButton.addEventListener("click", () => {
+  updateMonteCarloSimulation();
+  PercolationGrid.clearGrid();
+  updateGrids();
+  PercolationGrid.startSimulation();
   if (userOptions.isSyncMode()) {
     return initiateSimulationsSync();
   }
   return initiateSimulationsAsync();
 });
 
+stopButton.addEventListener("click", () => {
+  PercolationGrid.stopSimulation();
+});
 /**
  * Run simulations one after each other.
  */
 async function initiateSimulationsSync() {
   for (const grid of grids) {
-    await grid.beginPercolationSimulation();
-    monteCarloSimulation.updateResults(grid);
+    try {
+      await grid.beginPercolationSimulation();
+      monteCarloSimulation.updateResults(grid);
+    } catch (reason) {
+      console.log(reason);
+    }
   }
 }
 
@@ -150,6 +166,8 @@ async function initiateSimulationsSync() {
 function initiateSimulationsAsync() {
   grids.forEach((grid) => {
     const simulation = grid.beginPercolationSimulation();
-    simulation.then(() => monteCarloSimulation.updateResults(grid));
+    simulation
+      .then(() => monteCarloSimulation.updateResults(grid))
+      .catch(console.log);
   });
 }

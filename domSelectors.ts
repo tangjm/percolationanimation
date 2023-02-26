@@ -10,6 +10,9 @@ export const asynchronous = document.querySelector("input[id='asynchronous']");
 export const startButton = document.querySelector(
   "button[id='beginSimulationButton']"
 );
+export const stopButton = document.querySelector(
+  "button[id='stopSimulationButton']"
+);
 
 export const presets: HTMLSelectElement = document.querySelector(
   "select[id='presets']"
