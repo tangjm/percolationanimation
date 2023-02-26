@@ -14,7 +14,6 @@ export default interface PercolationStats {
   updateMean: () => void;
   updateStdDev: () => void;
   updateResults: (g: PercolationGrid) => void;
-  updateDOM: (s: string, val: any) => void;
 }
 
 export class MonteCarloSimulation implements PercolationStats {
