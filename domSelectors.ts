@@ -14,3 +14,7 @@ export const startButton = document.querySelector(
 export const presets: HTMLSelectElement = document.querySelector(
   "select[id='presets']"
 );
+
+export const animationSpeed: HTMLInputElement = document.querySelector(
+  "input[id='animationSpeed']"
+);

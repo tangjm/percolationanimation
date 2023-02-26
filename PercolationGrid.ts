@@ -6,7 +6,7 @@ export default class PercolationGrid {
   cx: CanvasRenderingContext2D;
   scale: number;
   size: number;
-  animationDelay: number;
+  static animationDelay: number;
   percolation: Percolation;
   darkTheme: boolean;
 
@@ -17,9 +17,13 @@ export default class PercolationGrid {
   ) {
     this.scale = userOptions.getScaleFactor();
     this.size = userOptions.getGridDimensions();
-    this.animationDelay = userOptions.getAnimationSpeed();
+    PercolationGrid.animationDelay = userOptions.getAnimationSpeed();
     this.percolation = percolation;
     this.darkTheme = darkTheme;
+  }
+
+  static setAnimationDelay(delay: number) {
+    PercolationGrid.animationDelay = delay;
   }
 
   createPercolationGrid() {
@@ -48,7 +52,7 @@ export default class PercolationGrid {
 
   async beginPercolationSimulation(): Promise<void> {
     while (!this.percolation.percolates()) {
-      await wait(this.animationDelay);
+      await wait(PercolationGrid.animationDelay);
       const row = Math.floor(Math.random() * this.size) + 1;
       const col = Math.floor(Math.random() * this.size) + 1;
       if (this.percolation.open([col, row])) {

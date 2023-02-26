@@ -41,6 +41,9 @@ export class UserOptions {
   setNumOfGrids(numOfGrids: number) {
     this.numOfGrids = numOfGrids;
   }
+  setAnimationSpeed(speed: number) {
+    this.speed = speed;
+  }
   setSyncMode(newMode: boolean) {
     this.simulationMode = newMode;
   }

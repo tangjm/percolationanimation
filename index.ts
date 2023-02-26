@@ -7,6 +7,7 @@ import {
   asynchronous,
   synchronous,
   presets,
+  animationSpeed,
 } from "./domSelectors.js";
 import { UserOptions } from "./UserOptions.js";
 
@@ -75,8 +76,13 @@ var grids = generateGrids();
 
 // Presets
 presets.addEventListener("change", () => {
-  console.log(presets.value);
   setUserOptions(Presets[presets.value]);
+});
+
+// Simulation speed
+animationSpeed.addEventListener("change", (e) => {
+  userOptions.setAnimationSpeed(+animationSpeed.value);
+  PercolationGrid.setAnimationDelay(userOptions.getAnimationSpeed());
 });
 
 // Simulation mode
