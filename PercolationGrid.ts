@@ -27,7 +27,7 @@ export default class PercolationGrid {
     const canvasSize = this.size * this.scale + 2 * this.scale;
     canvas.setAttribute("width", String(canvasSize));
     canvas.setAttribute("height", String(canvasSize));
-    const rootNode = document.querySelector("div");
+    const rootNode = document.querySelector("div[id='root']");
     rootNode.appendChild(canvas);
 
     this.cx = canvas.getContext("2d");
@@ -72,5 +72,12 @@ export default class PercolationGrid {
     const endY = this.scale;
     this.cx.moveTo(startX, startY);
     this.cx.fillRect(startX, startY, endX, endY);
+  }
+
+  static clearGrid(): void {
+    const rootNode = document.querySelector("div[id='root']");
+    while (rootNode.hasChildNodes()) {
+      rootNode.removeChild(rootNode.firstElementChild);
+    }
   }
 }
