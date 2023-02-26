@@ -2,73 +2,60 @@ import { randomInt } from "./helpers.js";
 import Percolation from "./Percolation.js";
 import PercolationGrid from "./PercolationGrid.js";
 import { MonteCarloSimulation, updateDOM } from "./PercolationStats.js";
-import { UserOptions } from "./types.js";
-import { startButton, synchronous, asynchronous } from "./domSelectors.js";
+import {
+  startButton,
+  asynchronous,
+  synchronous,
+  presets,
+} from "./domSelectors.js";
+import { UserOptions } from "./UserOptions.js";
 
-const userOptions: UserOptions = {
-  scaleFactor: 10,
-  gridDimensions: 100,
-  numOfGrids: 1,
-  speed: 0.02,
-  getScaleFactor() {
-    return this.scaleFactor;
-  },
-  getGridDimensions() {
-    return this.gridDimensions;
-  },
-  getNumOfGrids() {
-    return this.numOfGrids;
-  },
-  getAnimationSpeed() {
-    return this.speed;
-  },
-  setScaleFactor(scaleFactor: number) {
-    this.scaleFactor = scaleFactor;
-  },
-  setGridDimensions(n: number) {
-    this.gridDimensions = n;
-  },
-  setNumOfGrids(numOfGrids: number) {
-    this.numOfGrids = numOfGrids;
-  },
-};
-
-enum DefaultSampleSizes {
+enum Presets {
   LARGE,
   MEDIUM,
   SMALL,
   RANDOM,
 }
+interface Options {
+  scaleFactor: number;
+  gridDimensions: number;
+  numOfGrids: number;
+  speed: number;
+}
 
-updateUserOptions(DefaultSampleSizes.RANDOM);
+var userOptions = updateUserOptions(Presets.RANDOM);
 
-function updateUserOptions(options: DefaultSampleSizes) {
+function setUserOptions(options: Options) {
+  userOptions = updateUserOptions(options);
+  PercolationGrid.clearGrid();
+  updateGrids();
+}
+
+function updateUserOptions(options: Presets | Options) {
   switch (options) {
-    case DefaultSampleSizes.LARGE:
-      userOptions.setScaleFactor(5);
-      userOptions.setGridDimensions(10);
-      userOptions.setNumOfGrids(333);
-      break;
-    case DefaultSampleSizes.MEDIUM:
-      userOptions.setScaleFactor(10);
-      userOptions.setGridDimensions(20);
-      userOptions.setNumOfGrids(50);
-      break;
-    case DefaultSampleSizes.SMALL:
-      userOptions.setScaleFactor(10);
-      userOptions.setGridDimensions(10);
-      userOptions.setNumOfGrids(1);
-      break;
-    case DefaultSampleSizes.RANDOM:
+    case Presets.LARGE:
+      return new UserOptions(5, 10, 333, 0.02);
+    case Presets.MEDIUM:
+      return new UserOptions(10, 20, 50, 0.02);
+    case Presets.SMALL:
+      return new UserOptions(10, 10, 1, 0.02);
+    case Presets.RANDOM:
       const max = 30;
       const min = 5;
-      const scaleFactor = randomInt(min, max / 2);
+      const scaleFactorRand = randomInt(min, max / 2);
       const gridCount =
-        scaleFactor >= 10 ? randomInt(min, max / 4) : randomInt(min, max * 4);
-      userOptions.setScaleFactor(scaleFactor);
-      userOptions.setGridDimensions(randomInt(min, max));
-      userOptions.setNumOfGrids(gridCount);
-      break;
+        scaleFactorRand >= 10
+          ? randomInt(min, max / 4)
+          : randomInt(min, max * 4);
+      return new UserOptions(
+        scaleFactorRand,
+        randomInt(min, max),
+        gridCount,
+        0.02
+      );
+    default:
+      const { scaleFactor, gridDimensions, numOfGrids, speed } = options;
+      return new UserOptions(scaleFactor, gridDimensions, numOfGrids, speed);
   }
 }
 
@@ -84,20 +71,15 @@ const monteCarloSimulation: MonteCarloSimulation = new MonteCarloSimulation(
   updateDOM
 );
 
-let grids: PercolationGrid[] = [...new Array(userOptions.getNumOfGrids())];
+var grids = generateGrids();
 
-grids = grids.map(
-  (_) =>
-    new PercolationGrid(
-      userOptions,
-      new Percolation(userOptions.getGridDimensions()),
-      true
-    )
-);
-grids.forEach((grid) => grid.createPercolationGrid());
+// Presets
+presets.addEventListener("change", () => {
+  console.log(presets.value);
+  setUserOptions(Presets[presets.value]);
+});
 
-let simulationMode = "sync";
-
+// Simulation mode
 synchronous.addEventListener("change", () => {
   updateSimulationMode(synchronous.getAttribute("value"));
 });
@@ -106,11 +88,32 @@ asynchronous.addEventListener("change", () => {
 });
 
 function updateSimulationMode(newMode: string) {
-  simulationMode = newMode;
+  userOptions.setSyncMode(newMode === "sync");
 }
 
+// Grids
+function generateGrids() {
+  let grids: PercolationGrid[] = [...new Array(userOptions.getNumOfGrids())];
+
+  grids = grids.map(
+    (_) =>
+      new PercolationGrid(
+        userOptions,
+        new Percolation(userOptions.getGridDimensions()),
+        true
+      )
+  );
+  grids.forEach((grid) => grid.createPercolationGrid());
+  return grids;
+}
+
+function updateGrids() {
+  grids = generateGrids();
+}
+
+// Start simulation button
 startButton.addEventListener("click", () => {
-  if (simulationMode === "sync") {
+  if (userOptions.isSyncMode()) {
     return initiateSimulationsSync();
   }
   return initiateSimulationsAsync();
