@@ -24,11 +24,17 @@ interface Options {
   speed: number;
 }
 
-var userOptions = updateUserOptions(Presets.RANDOM);
+var userOptions = updateUserOptions({
+  scaleFactor: 10,
+  gridDimensions: 40,
+  numOfGrids: 1,
+  speed: 0.02,
+});
 
 function setUserOptions(options: Options) {
   userOptions = updateUserOptions(options);
   PercolationGrid.clearGrid();
+  updateMonteCarloSimulation();
   updateGrids();
 }
 
@@ -67,10 +73,13 @@ function updateUserOptions(options: Presets | Options) {
 // (0, 0) is our virtual top node
 // (size + 1, size + 1) is our virtual bottom node
 
-const monteCarloSimulation: MonteCarloSimulation = new MonteCarloSimulation(
+var monteCarloSimulation: MonteCarloSimulation = new MonteCarloSimulation(
   userOptions,
-  updateDOM
 );
+
+function updateMonteCarloSimulation() {
+  monteCarloSimulation = new MonteCarloSimulation(userOptions);
+}
 
 var grids = generateGrids();
 

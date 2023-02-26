@@ -24,11 +24,9 @@ export class MonteCarloSimulation implements PercolationStats {
   percolationThresholds: number[];
   mean: number | null;
   stdDev: number | null;
-  updateDOM: (s: string, val: number) => void;
 
   constructor(
     config: UserOptions,
-    updateDOM: (s: string, val: number) => void
   ) {
     this.trials = {
       total: config.getNumOfGrids(),
@@ -37,7 +35,6 @@ export class MonteCarloSimulation implements PercolationStats {
     this.percolationThresholds = [];
     this.mean = null;
     this.stdDev = null;
-    this.updateDOM = updateDOM;
     updateDOM("trialsTotal", this.trials.total);
   }
   incrementTrialsCompleted() {
@@ -69,9 +66,9 @@ export class MonteCarloSimulation implements PercolationStats {
     this.addPercolationThreshold(percolationGrid);
     this.updateMean();
     this.updateStdDev();
-    this.updateDOM("trialsCompleted", this.trials.completed);
-    this.updateDOM("mean", this.mean);
-    this.updateDOM("stdDev", this.stdDev);
+    updateDOM("trialsCompleted", this.trials.completed);
+    updateDOM("mean", this.mean);
+    updateDOM("stdDev", this.stdDev);
   }
 }
 

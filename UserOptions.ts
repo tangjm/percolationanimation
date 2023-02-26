@@ -1,8 +1,8 @@
 export class UserOptions {
-  scaleFactor: number = 10;
-  gridDimensions: number = 100;
-  numOfGrids: number = 1;
-  speed: number = 0.02;
+  scaleFactor: number;
+  gridDimensions: number;
+  numOfGrids: number;
+  speed: number;
   simulationMode: boolean = true;
 
   constructor(
