@@ -10,58 +10,65 @@
   </head>
   <body>
     <h1>Monte Carlo simulations of percolation through a 2D grid.</h1>
-    <div id="stats">
-      <div id="userOptions">
-        <div>
-          <label for="presets">Choose a preset:</label>
-          <select name="presets" id="presets">
-            <option value="DEFAULT" selected>DEFAULT</option>
-            <option value="LARGE">LARGE</option>
-            <option value="MEDIUM">MEDIUM</option>
-            <option value="SMALL">SMALL</option>
-            <option value="RANDOM">RANDOM</option>
-          </select>
-          <div>
-            <input
-              type="range"
-              id="animationSpeed"
-              name="animationSpeed"
-              min="0.0001"
-              max="0.8"
-              value="0.05"
-              step="0.0001"
-            />
-            <label for="animationSpeed">n/a</label>
-          </div>
-
-          <input type="text" />
+    <h3>Simulation options</h3>
+    <div id="userOptions">
+      <!-- presets -->
+      <div>
+        <label for="presets">Choose a preset:</label>
+        <select name="presets" id="presets">
+          <option value="DEFAULT" selected>DEFAULT</option>
+          <option value="LARGE">LARGE</option>
+          <option value="MEDIUM">MEDIUM</option>
+          <option value="SMALL">SMALL</option>
+          <option value="RANDOM">RANDOM</option>
+        </select>
+      </div>
+      <!-- animation speed -->
+      <div>
+        <input
+          type="range"
+          id="animationSpeed"
+          name="animationSpeed"
+          min="0.0001"
+          max="0.8"
+          value="0.05"
+          step="0.0001"
+        />
+        <label for="animationSpeed">n/a</label>
+      </div>
+      <!-- simultaneous/sequential mode -->
+      <div id="simulationOptions">
+        <div id="synchronous">
+          <input
+            type="radio"
+            id="synchronous"
+            name="simulationProperties"
+            value="sync"
+            autocomplete="off"
+            checked
+          />
+          <label for="synchronous">Synchronous</label>
         </div>
-        <div id="simulationOptions">
-          <div id="synchronous">
-            <input
-              type="radio"
-              id="synchronous"
-              name="simulationProperties"
-              value="sync"
-              autocomplete="off"
-              checked
-            />
-            <label for="synchronous">Synchronous</label>
-          </div>
-          <div id="asynchronous">
-            <input
-              type="radio"
-              id="asynchronous"
-              name="simulationProperties"
-              value="async"
-              autocomplete="off"
-            />
-            <label for="asynchronous">Asynchronous</label>
-          </div>
+        <div id="asynchronous">
+          <input
+            type="radio"
+            id="asynchronous"
+            name="simulationProperties"
+            value="async"
+            autocomplete="off"
+          />
+          <label for="asynchronous">Asynchronous</label>
         </div>
+      </div>
+      <br />
+      <div>
         <button id="beginSimulationButton">Begin simulation</button>
         <button id="stopSimulationButton">Stop simulation</button>
       </div>
+    </div>
+
+    <!-- statistics -->
+    <div id="stats">
       <h2>Statistics:</h2>
       <p id="trials">
         Trials: <b id="trials-completed">0</b> <b>/</b>
@@ -71,9 +78,10 @@
       <p id="stdDev">Standard deviation: <b>n/a</b></p>
     </div>
 
+    <!-- percolation grids -->
     <p>Before canvas</p>
     <div id="root"></div>
     <p>After canvas</p>
-    <script></script>
+    <!-- <script></script> -->
   </body>
 </html>
