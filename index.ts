@@ -1,7 +1,7 @@
 import { randomInt } from "./helpers.js";
 import Percolation from "./Percolation.js";
 import PercolationGrid from "./PercolationGrid.js";
-import { MonteCarloSimulation, updateDOM } from "./PercolationStats.js";
+import { MonteCarloSimulation } from "./PercolationStats.js";
 import {
   startButton,
   asynchronous,
@@ -27,6 +27,8 @@ interface Options {
 }
 
 var userOptions = updateUserOptions(Presets.DEFAULT);
+var monteCarloSimulation = new MonteCarloSimulation(userOptions);
+var grids = generateGrids();
 
 function updateUserOptions(options: Presets | Options) {
   switch (options) {
@@ -65,14 +67,10 @@ function updateUserOptions(options: Presets | Options) {
 // (0, 0) is our virtual top node
 // (size + 1, size + 1) is our virtual bottom node
 
-var monteCarloSimulation: MonteCarloSimulation = new MonteCarloSimulation(
-  userOptions
-);
-
+// New simulation
 function updateMonteCarloSimulation() {
   monteCarloSimulation = new MonteCarloSimulation(userOptions);
 }
-var grids = generateGrids();
 
 // Grids
 function generateGrids() {
@@ -90,7 +88,7 @@ function generateGrids() {
   return grids;
 }
 
-function updateGrids() {
+function createNewGrids() {
   grids = generateGrids();
 }
 
@@ -102,12 +100,11 @@ presets.addEventListener("change", () => {
 function setUserOptions(options: Options) {
   userOptions = updateUserOptions(options);
   PercolationGrid.clearGrid();
-  updateGrids();
+  createNewGrids();
   updateMonteCarloSimulation();
-  // monteCarloSimulation.clear();
 }
 // Simulation speed
-animationSpeed.addEventListener("change", (e) => {
+animationSpeed.addEventListener("input", (e) => {
   userOptions.setAnimationSpeed(+animationSpeed.value);
   PercolationGrid.setAnimationDelay(userOptions.getAnimationSpeed());
 });
@@ -135,7 +132,7 @@ Begin new simulations for all new grids
 startButton.addEventListener("click", () => {
   updateMonteCarloSimulation();
   PercolationGrid.clearGrid();
-  updateGrids();
+  createNewGrids();
   PercolationGrid.startSimulation();
   if (userOptions.isSyncMode()) {
     return initiateSimulationsSync();
@@ -146,6 +143,7 @@ startButton.addEventListener("click", () => {
 stopButton.addEventListener("click", () => {
   PercolationGrid.stopSimulation();
 });
+
 /**
  * Run simulations one after each other.
  */

@@ -26,13 +26,16 @@ npx tsc
 
 UI
 
-- [ ] Choose number of simulations
-- [ ] Change grid size 
-- [ ] Change size of each site 
+- [ ] Custom settings
+    - [ ] Choose number of trials 
+    - [ ] Change grid size 
+    - [ ] Change size of each site 
 - [ ] Invert colours
 - [ ] Revert to previous positions 
-- [ ] Option to run simulations in parallel or in sequence.
+- [x] Option to run simulations in parallel or in sequence.
 - [x] Add option to randomise settings
+- [x] Add presets
+- [x] Congifure simulation speed
 - [ ] Fix backfill problem 
 
 Statistics 
