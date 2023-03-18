@@ -18,6 +18,8 @@ npm install
 
 # Compile to Javascript
 npx tsc
+
+# Open index.html in your browser 
 ```
 
 ### Features 
