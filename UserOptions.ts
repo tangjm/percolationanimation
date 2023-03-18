@@ -3,18 +3,20 @@ export class UserOptions {
   gridDimensions: number;
   numOfGrids: number;
   speed: number;
-  simulationMode: boolean = true;
+  isSyncMode: boolean;
 
   constructor(
     scaleFactor: number,
     gridDimensions: number,
     numOfGrids: number,
-    speed: number
+    speed: number,
+    isSyncMode: boolean = true
   ) {
     this.scaleFactor = scaleFactor;
     this.gridDimensions = gridDimensions;
     this.numOfGrids = numOfGrids;
     this.speed = speed;
+    this.isSyncMode = isSyncMode;
   }
 
   getScaleFactor() {
@@ -29,8 +31,8 @@ export class UserOptions {
   getAnimationSpeed() {
     return this.speed;
   }
-  isSyncMode() {
-    return this.simulationMode;
+  getSyncMode() {
+    return this.isSyncMode;
   }
   setScaleFactor(scaleFactor: number) {
     this.scaleFactor = scaleFactor;
@@ -45,6 +47,6 @@ export class UserOptions {
     this.speed = speed;
   }
   setSyncMode(newMode: boolean) {
-    this.simulationMode = newMode;
+    this.isSyncMode = newMode;
   }
 }
