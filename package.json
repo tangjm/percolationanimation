@@ -3,13 +3,22 @@
   "version": "1.0.0",
   "description": "Monte carlo simulations of percolation through 2D grids.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node build/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx tsc"
   },
-  "keywords": ["percolation", "unionfind"],
+  "keywords": [
+    "percolation",
+    "unionfind",
+    "animation",
+    "grid"
+  ],
   "author": "tangjm",
   "license": "ISC",
   "devDependencies": {
+    "ngrok": "^4.3.3",
     "typescript": "^4.9.5"
   }
 }
