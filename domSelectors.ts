@@ -8,7 +8,7 @@ export const synchronous = document.querySelector("input[id='synchronous']");
 export const asynchronous = document.querySelector("input[id='asynchronous']");
 
 export const startButton = document.querySelector(
-  "button[id='beginSimulationButton']"
+  "button[id='startSimulationButton']"
 );
 export const stopButton = document.querySelector(
   "button[id='stopSimulationButton']"
@@ -20,4 +20,8 @@ export const presets: HTMLSelectElement = document.querySelector(
 
 export const animationSpeed: HTMLInputElement = document.querySelector(
   "input[id='animationSpeed']"
+);
+
+export const animationSpeedLabel: HTMLLabelElement = document.querySelector(
+    "label[for='animationSpeed']"
 );
