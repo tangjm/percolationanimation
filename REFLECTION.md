@@ -36,6 +36,14 @@ The behaviour of the function that lead to horizontal percolation was the follow
 (1,3) -> 3 
 
 
+### How to stop animations once they are in motion? 
+
+Another problem I ran into was with getting animations to stop playing when the user clicks the stop button or changes the preset.
+
+The issue stemmed from the fact that we had a loop that would continue until the 2d grid percolates and this was running within an asynchronous function that returns a promise. The difficulty is that once the asynchronous function is called, we loose direct control over what happens inside the function. And so when the user selects a different preset, the percolation grids would be redrawn but the asynchronous loop for the existing simulation would be running asynchronously in the background and the user would see the percolation statistics update despite no changes to the grids. This made for a poor user experience as the statistics shown would be unrelated to the displayed grids.
+
+The fix I went with gives us more control over when to terminate the loop mentioned in the previous paragraph. The idea was to setup static variables on the percolation grid class so that the loop that opens random sites in the percolation grids would also check this flag before proceeding. Clicking the stop button or changing presets would then set this flag which would affect all instances of the class. Regardless of which stage of the loop each instance was at, once the loop condition is next evaluated, the asynchronous functions would end their loops and return a rejected promise. This would then end the grid animations and updates to the percolation statics. In the case where the user changes presets, both the displayed grids and statistics would reflect the new preset and would be independent of any previous percolation simulations.
+
 ### Typescript 
 
 Typescript can be installed as a devDependency with 'npm install --save-dev typescript'
