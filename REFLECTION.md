@@ -44,6 +44,24 @@ The issue stemmed from the fact that we had a loop that would continue until the
 
 The fix I went with gives us more control over when to terminate the loop mentioned in the previous paragraph. The idea was to setup static variables on the percolation grid class so that the loop that opens random sites in the percolation grids would also check this flag before proceeding. Clicking the stop button or changing presets would then set this flag which would affect all instances of the class. Regardless of which stage of the loop each instance was at, once the loop condition is next evaluated, the asynchronous functions would end their loops and return a rejected promise. This would then end the grid animations and updates to the percolation statics. In the case where the user changes presets, both the displayed grids and statistics would reflect the new preset and would be independent of any previous percolation simulations.
 
+18/03/2023 
+
+Persisting problem with multiple simulations running behind the scenes. 
+
+Because we do not disable the 'start simulation' button after it is clicked, the user can repeatedly click 'start simulation' and that will trigger a series of simulations, with the displayed grid only reflecting the first and the others will run hidden from view.
+- This results in an incorrect display of the number of trials and what is shown.
+
+Solution 
+We can disable the 'start simulation' button until the 'stop simulation' button is clicked. 
+Alternatively, we can have a single button that alternates between 'start' and 'stop' button states. 
+This way the user cannot intentionaly or unintentionally run multiple instances of the preset simulation.
+
+19/03/2023
+When a simulation ends, we need to disable the 'stop' button and enable the 'start' button.
+To achieve this for synchronous simulations, we can add DOM updates after the 'for' loop. 
+For asynchronous simulations, we can use Promise.all to ensure that we only change the button states after all simulations complete.
+Also ensure the starting button states includes a disabled 'stop' button. It doesn't make sense to stop simulations that aren't in motion.
+
 ### Typescript 
 
 Typescript can be installed as a devDependency with 'npm install --save-dev typescript'
