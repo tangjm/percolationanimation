@@ -1,5 +1,3 @@
-import { MonteCarloSimulation } from "./PercolationStats";
-
 const userOptions = document.querySelector("div[id='userOptions']");
 
 // Use the radio button 'change' event to update the state tracking the ticked radio button.
@@ -24,4 +22,8 @@ export const animationSpeed: HTMLInputElement = document.querySelector(
 
 export const animationSpeedLabel: HTMLLabelElement = document.querySelector(
     "label[for='animationSpeed']"
+);
+
+export const colourTheme: HTMLButtonElement = document.querySelector(
+    "button[id='colourThemeButton']"
 );

@@ -10,7 +10,9 @@ import {
   animationSpeed,
   stopButton,
   animationSpeedLabel,
+  colourTheme,
 } from "./domSelectors.js";
+import { updateDOM } from "./domUpdates.js";
 import { UserOptions } from "./UserOptions.js";
 
 enum Presets {
@@ -61,6 +63,7 @@ interface Options {
   isSyncMode: boolean;
 }
 
+var darkTheme = false;
 var userOptions = updateUserOptions(Presets.DEFAULT);
 var monteCarloSimulation = new MonteCarloSimulation(userOptions);
 var grids = generateGrids();
@@ -152,7 +155,7 @@ function generateGrids() {
       new PercolationGrid(
         userOptions,
         new Percolation(userOptions.getGridDimensions()),
-        true
+        darkTheme
       )
   );
   grids.forEach((grid) => grid.createPercolationGrid());
@@ -163,14 +166,39 @@ function createNewGrids() {
   grids = generateGrids();
 }
 
+function toggleTheme() {
+    darkTheme = !darkTheme;
+}
+
+function enableToggleTheme() {
+    updateDOM(["colourTheme", "disableButton", false]); 
+}
+
+function disableToggleTheme() {
+    updateDOM(["colourTheme", "disableButton", true]); 
+}
+
+// Colour theme 
+colourTheme.addEventListener("click", (_) => {
+    const currentTheme = colourTheme.innerHTML;
+    const newTheme = currentTheme === "Dark" ? "Light" : "Dark";
+    updateDOM(["colourTheme", "updateText", newTheme]); 
+    toggleTheme();
+    PercolationGrid.clearGrid();
+    createNewGrids();
+});
+
+
 // Presets
 presets.addEventListener("change", () => {
   setUserOptions(Presets[presets.value]);
 });
 
 function setUserOptions(options: Options) {
-  startButton.removeAttribute("disabled");
-  stopButton.setAttribute("disabled", "true");
+  updateDOM(["startButton", "disableButton", false]);
+  updateDOM(["stopButton", "disableButton", true]);
+  enableToggleTheme();
+  
   userOptions = updateUserOptions(options);
   PercolationGrid.clearGrid();
   createNewGrids();
@@ -205,8 +233,9 @@ Create a new grid
 Begin new simulations for all new grids
 */
 startButton.addEventListener("click", () => {
-  startButton.setAttribute("disabled", "true");
-  stopButton.removeAttribute("disabled");
+  updateDOM(["startButton", "disableButton", true]); 
+  updateDOM(["stopButton", "disableButton", false]);
+  disableToggleTheme();
 
   updateMonteCarloSimulation();
   PercolationGrid.clearGrid();
@@ -219,7 +248,9 @@ startButton.addEventListener("click", () => {
 });
 
 stopButton.addEventListener("click", () => {
-  stopButton.setAttribute("disabled", "true");
+  updateDOM(["stopButton", "disableButton", true]);
+  updateDOM(["startButton", "disableButton", false]); 
+  enableToggleTheme();
   startButton.removeAttribute("disabled");
   PercolationGrid.stopSimulation();
 });
@@ -236,8 +267,9 @@ async function initiateSimulationsSync() {
       console.log(reason);
     }
   }
-  startButton.removeAttribute("disabled");
-  stopButton.setAttribute("disabled", "true");
+  updateDOM(["startButton", "disableButton", false]); 
+  updateDOM(["stopButton", "disableButton", true]);
+  enableToggleTheme();
 }
 
 /**
@@ -253,6 +285,7 @@ function initiateSimulationsAsync() {
     simulations.push(simulation);
   });
   Promise.all(simulations)
-    .then(() => stopButton.setAttribute("disabled", "true"))
-    .then(() => startButton.removeAttribute("disabled"));
+    .then(() => updateDOM(["stopButton", "disableButton", true]))
+    .then(() => updateDOM(["startButton", "disableButton", false]))
+    .then(() => enableToggleTheme());
 }
