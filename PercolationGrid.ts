@@ -52,7 +52,7 @@ export default class PercolationGrid {
     }
   }
 
-  async beginPercolationSimulation(): Promise<void> {
+  async beginPercolationSimulation(): Promise<string|void> {
     while (
       !this.percolation.percolates() &&
       !PercolationGrid.simulationIsStopped
@@ -74,6 +74,7 @@ export default class PercolationGrid {
         }
       }
     }
+    return "completed";
   }
 
   fillSite(start: GridVertex, colour: string) {
