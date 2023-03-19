@@ -34,10 +34,10 @@ export class MonteCarloSimulation implements PercolationStats {
     this.percolationThresholds = [];
     this.mean = null;
     this.stdDev = null;
-    updateDOM("trialsTotal", this.trials.total);
-    updateDOM("trialsCompleted", this.trials.completed);
-    updateDOM("mean", this.mean);
-    updateDOM("stdDev", this.stdDev);
+    updateDOM(["trialsTotal", "updateText", this.trials.total]);
+    updateDOM(["trialsCompleted", "updateText", this.trials.completed]);
+    updateDOM(["mean", "updateLastChildText", this.mean]);
+    updateDOM(["stdDev", "updateLastChildText", this.stdDev]);
   }
   incrementTrialsCompleted() {
     this.trials.completed++;
@@ -68,9 +68,9 @@ export class MonteCarloSimulation implements PercolationStats {
     this.addPercolationThreshold(percolationGrid);
     this.updateMean();
     this.updateStdDev();
-    updateDOM("trialsCompleted", this.trials.completed);
-    updateDOM("mean", this.mean);
-    updateDOM("stdDev", this.stdDev);
+    updateDOM(["trialsCompleted", "updateText", this.trials.completed]);
+    updateDOM(["mean", "updateLastChildText", this.mean]);
+    updateDOM(["stdDev", "updateLastChildText", this.stdDev]);
   }
 }
 

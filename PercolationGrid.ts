@@ -14,7 +14,7 @@ export default class PercolationGrid {
   constructor(
     userOptions: UserOptions,
     percolation: Percolation,
-    darkTheme = false
+    darkTheme: boolean,
   ) {
     this.scale = userOptions.getScaleFactor();
     this.size = userOptions.getGridDimensions();
