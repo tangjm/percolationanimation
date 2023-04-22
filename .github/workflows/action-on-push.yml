@@ -7,15 +7,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-      - uses: actions/checkout@v3
+        uses: actions/checkout@v3
 
       - name: Setup node 
-      - uses: actions/setup-node@v2
+        uses: actions/setup-node@v2
         with:
-    		  node-version: '18'
+		node-version: '18'
 
       - name: Install packages 
-      - run: npm install
+        run: npm install
       
       - name: Typescript to Javascript
-      - run: npx tsc
+        run: npx tsc
