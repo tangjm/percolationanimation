@@ -10,9 +10,9 @@ A project that visualises percolation through a 2D grid.
 </picture>
 
 
-### Setup 
+### Setup for local development
 
-```bash 
+```bash
 # Install dependencies
 npm install 
 
@@ -28,11 +28,11 @@ npx tsc
 
 UI
 
-- [ ] Custom settings
-    - [ ] Choose number of trials 
-    - [ ] Change grid size 
-    - [ ] Change size of each site 
-- [ ] Invert colours
+- [x] Custom settings
+    - [x] Choose number of trials 
+    - [x] Change grid size 
+    - [x] Change size of each site 
+- [x] Invert colours
 - [ ] Revert to previous positions 
 - [x] Option to run simulations in parallel or in sequence.
 - [x] Add option to randomise settings
