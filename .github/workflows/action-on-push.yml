@@ -3,6 +3,7 @@ run-name: ${{ github.actor }} is building the project.
 on: [push]
 jobs:
   build-project:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
